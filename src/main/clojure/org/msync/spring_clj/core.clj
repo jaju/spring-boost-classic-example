@@ -1,9 +1,9 @@
+;; [[file:../../../../../../README.org::*The Clojure Code][The Clojure Code:1]]
 (ns org.msync.spring-clj.core
   (:require [org.msync.spring-boost :as boost]
             [compojure.core :refer :all]
             [compojure.route :refer [not-found]]
-            [clojure.string]
-            [clojure.pprint :refer [pprint]])
+            [clojure.string])
   (:import [java.util.logging Logger]
            [org.springframework.context ApplicationContext]))
 

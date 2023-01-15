@@ -1,0 +1,84 @@
+* Sample SpringBoot project using [[https://github.com/jaju/spring-boost-classic][spring-boost-classic]]
+
+#+begin_src bash
+./gradlew bootRun
+
+#or
+
+./gradlew bootRun
+#+end_src
+
+
+Output looks something like
+#+begin_example
+> Task :bootRun
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v2.7.7)
+
+2023-01-15 19:06:40.086  INFO 40190 --- [           main] org.msync.spring_clj.App                 : Starting App using Java 17.0.5 on tachyon-mac-2.local with PID 40190 (/Users/jaju/github/spring-boost-classic-example/build/classes/java/main started by jaju in /Users/jaju/github/spring-boost-classic-example)
+2023-01-15 19:06:40.089  INFO 40190 --- [           main] org.msync.spring_clj.App                 : No active profile set, falling back to 1 default profile: "default"
+2023-01-15 19:06:40.764  INFO 40190 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2023-01-15 19:06:40.772  INFO 40190 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2023-01-15 19:06:40.772  INFO 40190 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.70]
+2023-01-15 19:06:40.852  INFO 40190 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2023-01-15 19:06:40.853  INFO 40190 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 728 ms
+2023-01-15 19:06:41.608  INFO 40190 --- [           main] o.m.spring-boost.application-context     : Initializing the ClojureComponent
+2023-01-15 19:06:42.432  INFO 40190 --- [           main] org.msync.spring_boost.Boost             : nREPL server started on port = 8190
+2023-01-15 19:06:42.432  INFO 40190 --- [           main] org.msync.spring_boost.Boost             : Initializing clojure code: org.msync.spring-clj.core/main
+2023-01-15 19:06:43.744  INFO 40190 --- [           main] org.msync.spring-clj.core                : [spring-clj] Initializing clojure app...
+2023-01-15 19:06:43.937  INFO 40190 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2023-01-15 19:06:43.944  INFO 40190 --- [           main] org.msync.spring_clj.App                 : Started App in 4.227 seconds (JVM running for 4.504)
+#+end_example
+
+** The Clojure Code
+#+begin_src clojure :tangle src/main/clojure/org/msync/spring_clj/core.clj :comments link
+(ns org.msync.spring-clj.core
+  (:require [org.msync.spring-boost :as boost]
+            [compojure.core :refer :all]
+            [compojure.route :refer [not-found]]
+            [clojure.string])
+  (:import [java.util.logging Logger]
+           [org.springframework.context ApplicationContext]))
+
+(defonce logger (Logger/getLogger (str *ns*)))
+
+(defroutes app
+  "Root hello-world GET endpoint, and another echo end-point that handles both GET and POST.
+  The :body entry in the request-map comes in either as a map for JSON requests, or as a String
+  for other types."
+  (GET "/" [:as {query-string :query-string}]
+       (str "<h1>Hello World.</h1>"
+            (if-not (clojure.string/blank? query-string) (str "We received a query-string " query-string))))
+  (GET "/echo/:greeter" [greeter]
+       {:status 200
+        :headers {:content-type "application/json"}
+        :body {:greeting (str "Hello, " greeter)}})
+  (POST "/echo/:greeter" [greeter :as request]
+        {:status 200
+         :headers {:content-type "application/json"}
+         :body {:greetings (str "Hello, " greeter)
+                :echo (:body request)}})
+  (not-found "<h1>Page not found</h1>"))
+
+(defn main
+  "Set this as your entry-point for the Clojure code in your spring-boot app.
+  Gets the ApplicationContext object as an argument - which you are free to ignore or use."
+  [^ApplicationContext application-context]
+
+  (.info logger (str "[spring-clj] Initializing clojure app..."))
+  (boost/set-handler! app))
+
+(comment
+  (require '[org.msync.spring-boost.application-context :as ac])
+  (ac/get-application-context)
+  (ac/beans-with-annotation org.springframework.stereotype.Component)
+  (->> (ac/beans-with-annotation org.springframework.stereotype.Component)
+       vals
+       (map class)))
+#+end_src
