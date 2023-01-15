@@ -24,7 +24,7 @@ sourceSets {
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.clojure:clojure:1.11.1")
-    implementation("org.msync:spring-boost-classic:0.1.0-SNAPSHOT")
+    implementation("org.msync:spring-boost-classic:0.1.1-SNAPSHOT")
     implementation("compojure:compojure:1.7.0")
 }
 
