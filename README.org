@@ -2,10 +2,6 @@
 
 #+begin_src bash
 ./gradlew bootRun
-
-#or
-
-./gradlew bootRun
 #+end_src
 
 
