@@ -1,7 +1,7 @@
 plugins {
     id("java")
-    id("org.springframework.boot") version "2.7.7"
-    id("io.spring.dependency-management") version "1.1.0"
+    id("org.springframework.boot") version "3.3.4"
+    id("io.spring.dependency-management") version "1.1.6"
 }
 
 repositories {
@@ -15,30 +15,24 @@ repositories {
 
 sourceSets {
     main {
-        java {
+        resources {
             srcDir("src/main/clojure")
         }
     }
 }
 
 dependencies {
+    implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.clojure:clojure:1.11.1")
-    implementation("org.msync:spring-boost-classic:0.1.1-SNAPSHOT")
-    implementation("compojure:compojure:1.7.0")
+    implementation("org.clojure:clojure:1.12.0")
+    implementation("org.msync:spring-boost-classic:0.3.0-alpha3")
+    implementation("compojure:compojure:1.7.1")
 }
-
-tasks.register<Copy>("copyClojure") {
-    from("src/main/clojure")
-    into("build/classes/java/main")
-}
-
-tasks.getByName("bootRunMainClassName").dependsOn("copyClojure")
 
 testing {
     suites {
         val test by getting(JvmTestSuite::class) {
-            useJUnitJupiter("5.9.2")
+            useJUnitJupiter("5.11.1")
         }
     }
 }

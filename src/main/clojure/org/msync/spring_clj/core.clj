@@ -1,9 +1,9 @@
 ;; [[file:../../../../../../README.org::*The Clojure Code][The Clojure Code:1]]
 (ns org.msync.spring-clj.core
-  (:require [org.msync.spring-boost :as boost]
+  (:require [clojure.string]
             [compojure.core :refer :all]
             [compojure.route :refer [not-found]]
-            [clojure.string])
+            [org.msync.spring-boost :as boost])
   (:import [java.util.logging Logger]
            [org.springframework.context ApplicationContext]))
 
@@ -31,15 +31,6 @@
   "Set this as your entry-point for the Clojure code in your spring-boot app.
   Gets the ApplicationContext object as an argument - which you are free to ignore or use."
   [^ApplicationContext application-context]
-
-  (.info logger (str "[spring-clj] Initializing clojure app..."))
+  (.info logger (str "[spring-clj] Initializing configured clojure web-app..."))
   (boost/set-handler! app))
-
-(comment
-  (require '[org.msync.spring-boost.application-context :as ac])
-  (ac/get-application-context)
-  (ac/beans-with-annotation org.springframework.stereotype.Component)
-  (->> (ac/beans-with-annotation org.springframework.stereotype.Component)
-       vals
-       (map class)))
 ;; The Clojure Code:1 ends here
